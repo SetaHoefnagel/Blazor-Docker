@@ -1,0 +1,37 @@
+version: '3.3'
+services:
+  db:
+      container_name: 'local-blazor-db'
+      image: 'mysql:5.7'
+      volumes:
+        - './MySQL:/var/lib/mysql'
+      networks:
+        - database
+      environment:
+        MYSQL_ROOT_PASSWORD: verysecurerootpassword
+        MYSQL_DATABASE: blazor_db
+        MYSQL_USER: blazor_user
+        MYSQL_PASSWORD: blazor_password
+      restart: unless-stopped
+  blazor:
+    container_name: 'local-blazor'
+    build:
+      context: ./Blazor-Docker
+      dockerfile: Dockerfile.dev
+    ports:
+      - 5000:5000
+    networks:
+      - default
+    environment:
+      MYSQL_HOST: 'db:3306'
+      MYSQL_DATABASE: blazor_db
+      MYSQL_USER: blazor_user
+      MYSQL_PASSWORD: blazor_password
+    volumes:
+      - "./Blazor-Docker:/app"
+    restart: unless-stopped
+
+    
+networks:
+  database:
+  default:
