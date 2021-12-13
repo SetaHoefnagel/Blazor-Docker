@@ -7,11 +7,10 @@ services:
         - './MySQL:/var/lib/mysql'
       networks:
         - database
-      environment:
-        MYSQL_ROOT_PASSWORD: verysecurerootpassword
-        MYSQL_DATABASE: blazor_db
-        MYSQL_USER: blazor_user
-        MYSQL_PASSWORD: blazor_password
+      ports:
+        - 3306
+      env_file:
+        - dev.env
       restart: unless-stopped
   blazor:
     container_name: 'local-blazor'
@@ -22,11 +21,9 @@ services:
       - 5000:5000
     networks:
       - default
-    environment:
-      MYSQL_HOST: 'db:3306'
-      MYSQL_DATABASE: blazor_db
-      MYSQL_USER: blazor_user
-      MYSQL_PASSWORD: blazor_password
+      - database
+    env_file:
+      - dev.env
     volumes:
       - "./Blazor-Docker:/app"
     restart: unless-stopped

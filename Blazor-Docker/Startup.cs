@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Blazor_Docker.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blazor_Docker
 {
@@ -28,10 +29,15 @@ namespace Blazor_Docker
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+
+            services.AddDbContext<DefaultContext>(options =>
+            {
+                options.UseMySQL($"Host={Environment.GetEnvironmentVariable("MYSQL_HOST")};Database={Environment.GetEnvironmentVariable("MYSQL_DATABASE")};Username={Environment.GetEnvironmentVariable("MYSQL_USER")};Password={Environment.GetEnvironmentVariable("MYSQL_PASSWORD")}");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DefaultContext context)
         {
             if (env.IsDevelopment())
             {
@@ -41,6 +47,8 @@ namespace Blazor_Docker
             {
                 app.UseExceptionHandler("/Error");
             }
+
+            context.Database.Migrate();
 
             app.UseStaticFiles();
 
