@@ -6,7 +6,6 @@ WORKDIR /app
 COPY *.csproj ./
 RUN dotnet restore
 COPY . ./
-# RUN dotnet database update
 
 EXPOSE 5000
 
